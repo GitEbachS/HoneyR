@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Table } from "reactstrap";
-//import { getServiceTicket } from "../../data/serviceTicketsData";
+import { getSingleTicket } from "../../data/serviceTicketsData";
+
 
 export default function TicketDetails() {
   const { id } = useParams();
 
-  const [ticket, setTicket] = useState(null);
+  const [ticket, setTicket] = useState({});
 
-  //add useEffect here to get the ticket details from the API
+  useEffect(() => {
+    getSingleTicket(id).then(setTicket);
+  }, []);
 
   if (!ticket) {
     return null;
@@ -19,7 +22,7 @@ export default function TicketDetails() {
       <tbody>
         <tr>
           <th scope="row">Customer</th>
-          <td>{ticket.customer.name}</td>
+          <td>{ticket.customer?.name}</td>
         </tr>
         <tr>
           <th scope="row">Description</th>

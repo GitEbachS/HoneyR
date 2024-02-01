@@ -1,31 +1,25 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Form, Button } from 'react-bootstrap';
+import { Form } from 'reactstrap';
+import { Link } from "react-router-dom";
+import { Button } from "reactstrap";
 import { createTicket, updateTicket } from '../../data/serviceTicketsData';
-import { getEmployees } from '../../data/employeeData';
-import { getCustomers } from '../../data/customerData';
 
 
 
 const initialState = {
-  employeeId: -1,
-  customerId: -1,
-  description: "",
+  employeeId: '',
+  customerId: '',
+  description: '',
   emergency: false,
   dateCompleted: '',
 };
-export default function CreateTicket({ obj }) {
- const [customers, setCustomers] = useState([]);
- const [employees, setEmployees] = useState([]);
+export default function TicketForm({ obj }) {
  const [formInput, setFormInput] = useState(initialState);
 
-
-
   useEffect(() => {
-    getEmployees().then(setEmployees);
-    getCustomers().then(setCustomers);
-    setFormInput(obj);
-  }, [obj]);
+    if (obj.id) setFormInput(obj);
+  }, [obj, user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,9 +32,15 @@ export default function CreateTicket({ obj }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (obj.id) {
-      updateTicket(formInput);
+      updateTicket(formInput).then(() => router.push(`/tickets/${obj.id}`));
     } else {
-      createTicket(formInput);
+      const payload = { ...formInput, volunteerId: user.uid };
+      createTicket(payload).then(({ name }) => {
+        const patchPayload = { id: name };
+        updateTicket(patchPayload).then(() => {
+          router.push('/tickets');
+        });
+      });
     }
   };
 
@@ -53,15 +53,16 @@ export default function CreateTicket({ obj }) {
         <Form.Label>Description</Form.Label>
         <Form.Control
           as="textarea"
+          aria-label="Description"
           name="description"
           value={formInput.description}
           onChange={handleChange}
           required />
       </Form.Group>
-
       <Form.Group className="mb-3">
         <Form.Label>Customer</Form.Label>
         <Form.Select
+          aria-label="Customer"
           name="customerId"
           onChange={handleChange}
           className="mb-3"
@@ -101,11 +102,12 @@ export default function CreateTicket({ obj }) {
         </Form.Select>
         </Form.Group>
         <Form.Check
-        className="mb-3"
+        className="text-white mb-3"
         type="switch"
         id="emergency"
         name="emergency"
-        label="Emergency?"
+        label="emergency"
+        aria-label="Emergency"
         checked={formInput.emergency}
         onChange={(e) => {
           setFormInput((prevState) => ({
@@ -115,23 +117,21 @@ export default function CreateTicket({ obj }) {
         } } />
 
       {/* SUBMIT BUTTON  */}
-      <Button type="submit"> Add Ticket </Button>
+      <Button type="submit">{obj.id ? 'Update' : 'Add'} Service Ticket </Button>
     </Form>
   );
 }
 
-CreateTicket.propTypes = {
+TicketForm.propTypes = {
   obj: PropTypes.shape({
-    customerId: PropTypes.int,
-    employeeId: PropTypes.int,
+    customerId: PropTypes.string,
+    employeeId: PropTypes.string,
     emergency: PropTypes.bool,
     description: PropTypes.string,
+    id: PropTypes.string,
   }),
 };
 
-CreateTicket.defaultProps = {
-  obj: initialState,
-};
 
 
 
