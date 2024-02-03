@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Table } from "reactstrap";
-import { getSingleTicket } from "../../data/serviceTicketsData";
+import { employeeToAssign, getSingleTicket } from "../../data/serviceTicketsData";
+import { Button } from "react-bootstrap";
+
 
 
 export default function TicketDetails() {
@@ -9,9 +11,13 @@ export default function TicketDetails() {
 
   const [ticket, setTicket] = useState({});
 
+  const assignEmp = () => {
+    employeeToAssign(id);
+  };
+
   useEffect(() => {
     getSingleTicket(id).then(setTicket);
-  }, []);
+  }, [ticket]);
 
   if (!ticket) {
     return null;
@@ -35,6 +41,11 @@ export default function TicketDetails() {
         <tr>
           <th scope="row">Employee</th>
           <td>{ticket.employee?.name || "Unassigned"}</td>
+          {ticket.employeeId ? "" 
+          :
+          <td><Button variant="outline-success" onClick={assignEmp} className="m-2">
+          ASSIGN
+        </Button></td>}
         </tr>
         <tr>
           <th scope="row">Completed?</th>

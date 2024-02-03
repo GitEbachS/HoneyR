@@ -8,11 +8,10 @@ import { getCustomers } from '../../data/customerData';
 
 
 const initialState = {
-  employeeId: -1,
-  customerId: -1,
+  employeeId: null,
+  customerId: null,
   description: "",
   emergency: false,
-  dateCompleted: '',
 };
 export default function CreateTicket({ obj }) {
  const [customers, setCustomers] = useState([]);
@@ -24,7 +23,7 @@ export default function CreateTicket({ obj }) {
   useEffect(() => {
     getEmployees().then(setEmployees);
     getCustomers().then(setCustomers);
-    setFormInput(obj);
+    if (obj.id) setFormInput(obj);
   }, [obj]);
 
   const handleChange = (e) => {
@@ -40,13 +39,14 @@ export default function CreateTicket({ obj }) {
     if (obj.id) {
       updateTicket(formInput);
     } else {
-      createTicket(formInput);
+      const payload = formInput;
+      createTicket(payload);
     }
   };
 
   return (
   <Form onSubmit={handleSubmit}>
-      <h3>Submit a Ticket</h3>;
+      <h3>Submit a Ticket</h3>
 
 
       <Form.Group className="mb-3">
@@ -87,7 +87,7 @@ export default function CreateTicket({ obj }) {
           onChange={handleChange}
           className="mb-3"
           value={formInput.employeeId}
-          required
+          
         >
           <option value="">Select an Employee</option>
           {employees.map((employee) => (
@@ -122,10 +122,12 @@ export default function CreateTicket({ obj }) {
 
 CreateTicket.propTypes = {
   obj: PropTypes.shape({
-    customerId: PropTypes.int,
-    employeeId: PropTypes.int,
+    customerId: PropTypes.number,
+    employeeId: PropTypes.number,
     emergency: PropTypes.bool,
     description: PropTypes.string,
+    DateCompleted: PropTypes.string,
+    id: PropTypes.number,
   }),
 };
 
