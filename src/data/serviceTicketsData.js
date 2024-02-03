@@ -29,26 +29,50 @@ export const deleteTicket = (id) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 export const updateTicket = (payload) => new Promise((resolve, reject) => {
-  fetch(`${_apiUrl}/${payload.id}`, {
+  fetch(`${_apiUrl}/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
   })
-    // .then((response) => response.json())
+    .then((response) => response.json())
     .then((data) => resolve(data))
     .catch(reject);
 });
 export const createTicket = (payload) => new Promise((resolve, reject) => {
-  fetch(`${_apiUrl}`, {
+  fetch(_apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
   })
-    // .then((response) => response.json())
+    .then((response) => response.json())
+    .then((data) => resolve(data))
+    .catch(reject);
+});
+
+export const completeToday = (id) => new Promise((resolve, reject) => {
+  fetch(`${_apiUrl}/${id}/complete`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => resolve(data))
+    .catch(reject);
+});
+
+export const employeeToAssign = (id) => new Promise((resolve, reject) => {
+  fetch(`${_apiUrl}/${id}/assign`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((response) => response.json())
     .then((data) => resolve(data))
     .catch(reject);
 });
